@@ -1,0 +1,17 @@
+[33mcommit c3ad2d46c6c9d66b0c9a84f35ed2f74ff9ca815d[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: stevobko123 <balaz.stefan1996@gmail.com>
+Date:   Wed Dec 8 15:13:46 2021 +0100
+
+    pridaná funkcia na upravu headingu ako aj na samotné vytvorenie
+
+[33mcommit 671339956d08270e6d609a83bac049614e0270dd[m
+Author: stevobko123 <balaz.stefan1996@gmail.com>
+Date:   Wed Dec 8 14:37:27 2021 +0100
+
+    pridanie, odobratie,done + done arr
+
+[33mcommit e3a0158ea33a9e8e9d424ee2d8a24b4f2effa1fa[m
+Author: stevobko123 <balaz.stefan1996@gmail.com>
+Date:   Tue Dec 7 10:06:24 2021 +0100
+
+    init
