@@ -1,31 +1,48 @@
 <template>
-  <base-card class="control">
-    <form @submit.prevent="submitForm">
-      <label for="email"></label>
-      <input type="email" id="email" v-model="inputEmail" placeholder="Email" />
-      <label for="password"></label>
-      <input
-        type="password"
-        id="password"
-        v-model="inputPassword"
-        placeholder="Password"
-      />
-      <div class="btns">
-        <button
-          :class="{ register: mode == 'register', login: mode == 'login' }"
-        >
-          {{ actionMode }}
-        </button>
-        <button
-          type="button"
-          @click="switchMode"
-          :class="{ register: mode == 'login', login: mode == 'register' }"
-        >
-          {{ buttonMode }}
-        </button>
-      </div>
-    </form>
-  </base-card>
+  <div>
+    <base-dialog
+      :show="!!error"
+      title="An Error occured..."
+      @close="handleError"
+    >
+      <p>{{ error }}</p>
+    </base-dialog>
+    <base-dialog :show="isLoading" fixed title="Autentificating...">
+      <base-spinner></base-spinner
+    ></base-dialog>
+    <base-card class="control">
+      <form @submit.prevent="submitForm">
+        <label for="email"></label>
+        <input
+          type="email"
+          id="email"
+          v-model="inputEmail"
+          placeholder="Email"
+        />
+        <label for="password"></label>
+        <input
+          type="password"
+          id="password"
+          v-model="inputPassword"
+          placeholder="Password"
+        />
+        <div class="btns">
+          <button
+            :class="{ register: mode == 'register', login: mode == 'login' }"
+          >
+            {{ actionMode }}
+          </button>
+          <button
+            type="button"
+            @click="switchMode"
+            :class="{ register: mode == 'login', login: mode == 'register' }"
+          >
+            {{ buttonMode }}
+          </button>
+        </div>
+      </form>
+    </base-card>
+  </div>
 </template>
 <script>
 export default {
@@ -34,6 +51,8 @@ export default {
       inputEmail: "",
       inputPassword: "",
       mode: "login",
+      isLoading: false,
+      error: null,
     };
   },
 
@@ -62,15 +81,31 @@ export default {
         this.mode = "login";
       }
     },
-    submitForm() {
-      if (this.mode === "login") {
-        // dispatch login action
-      } else {
-        this.$store.dispatch("registerUser", {
-          email: this.inputEmail,
-          password: this.inputPassword,
-        });
+
+    async submitForm() {
+      try {
+        this.isLoading = true;
+        if (this.mode === "login") {
+          await this.$store.dispatch("loginUser", {
+            email: this.inputEmail,
+            password: this.inputPassword,
+          });
+          this.isLoading = false;
+        } else {
+          this.isLoading = true;
+
+          await this.$store.dispatch("registerUser", {
+            email: this.inputEmail,
+            password: this.inputPassword,
+          });
+        }
+      } catch (err) {
+        this.error = err.message || "Failed to auth! Try again later...";
       }
+      this.isLoading = false;
+    },
+    handleError() {
+      this.error = null;
     },
   },
 };
@@ -82,6 +117,8 @@ form {
 }
 .control {
   margin: auto;
+  width: 500px;
+  margin-top: 50px;
 }
 .btns {
   display: flex;

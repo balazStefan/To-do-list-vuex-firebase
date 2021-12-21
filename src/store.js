@@ -214,12 +214,39 @@ const store = createStore({
       context.dispatch("loadLists");
       context.commit("changeState", todo);
     },
-    //// REGISTRACIA NOVY USER
+    //// REGISTRATION NEW USER
     async registerUser(context, payload) {
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w
   
       `,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: payload.email,
+            password: payload.password,
+            returnSecureToken: true,
+          }),
+        }
+      );
+      const responseData = await response.json();
+      if (!response.ok) {
+        // err. handling
+        console.log(responseData);
+        const error = new Error(responseData.message || "Fail to auth!");
+        throw error;
+      }
+      console.log(responseData);
+      context.commit("setUser", {
+        token: responseData.idToken,
+        userId: responseData.localId,
+        tokenExpiration: responseData.expiresIn,
+      });
+    },
+    //// LOGIN USER
+    async loginUser(context, payload) {
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w`,
         {
           method: "POST",
           body: JSON.stringify({
