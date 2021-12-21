@@ -14,7 +14,9 @@
         @blur="v$.header.$touch"
       ></w-input>
       <div v-if="v$.header.$error">{{ v$.header.$errors[0].$message }}</div>
-      <w-button @click="addNewTodoList"> Add new TodoList</w-button>
+      <w-button @click="addNewTodoList" class="btn-control">
+        Add new TodoList</w-button
+      >
     </form>
   </div>
 </template>
@@ -66,5 +68,10 @@ div {
   justify-content: center;
   align-items: center;
   margin-top: 10%;
+}
+
+.btn-control {
+  margin-top: 10%;
+  width: 100%;
 }
 </style>

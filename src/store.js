@@ -66,7 +66,7 @@ const store = createStore({
       const response = await fetch(
         `https://whattodostevo-default-rtdb.firebaseio.com/lists.json`
       );
-      const responseData = await response.json();
+      const responseData = (await response.json()) ?? {};
       if (!response.ok) {
         // err handling
         const error = new Error(responseData.message || "FAIL TO FETCH ");
@@ -77,8 +77,8 @@ const store = createStore({
       for (const key in responseData) {
         const list = {
           idList: key,
-          header: responseData[key].header,
-          todoes: Object.values(responseData[key].todoes),
+          header: responseData[key]?.header,
+          todoes: Object.values(responseData[key]?.todoes), // Object.values(responseData[key]?.todoes)
         };
 
         lists.push(list);
@@ -208,4 +208,9 @@ const store = createStore({
   },
 });
 
+// localStorage.setItem("aaaaa", "Štefan");
+console.log(localStorage);
+localStorage.setItem("age", "25");
+console.log(localStorage.getItem("age"));
+console.log(localStorage.key(0));
 export default store;

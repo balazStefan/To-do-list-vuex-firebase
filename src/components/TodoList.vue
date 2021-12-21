@@ -243,7 +243,7 @@ export default {
 </script>
 <style scoped>
 form {
-  width: 500px;
+  max-width: 500px;
   color: black;
 }
 .list {
@@ -270,7 +270,7 @@ form {
 }
 .select-control {
   position: absolute;
-  top: 3%;
+  top: 1%;
   left: 75%;
 }
 .select-control:hover {

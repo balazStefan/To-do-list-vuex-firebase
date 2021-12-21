@@ -32,7 +32,7 @@ export default {
 <style scoped>
 div {
   border: 1px solid black;
-  width: 500px;
+  max-width: 20em;
   display: flex;
   justify-content: space-evenly;
   background-color: rgb(167, 208, 126);
@@ -52,6 +52,7 @@ input {
 button {
   align-self: center;
 }
+
 .done {
   text-decoration: line-through;
 }

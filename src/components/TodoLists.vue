@@ -19,9 +19,17 @@ export default {
     return {};
   },
 
+  created() {
+    this.load();
+  },
   computed: {
     lists() {
       return this.$store.getters.lists;
+    },
+  },
+  methods: {
+    load() {
+      this.$store.dispatch("loadLists");
     },
   },
 };
