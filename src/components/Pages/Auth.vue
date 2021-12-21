@@ -62,6 +62,16 @@ export default {
         this.mode = "login";
       }
     },
+    submitForm() {
+      if (this.mode === "login") {
+        // dispatch login action
+      } else {
+        this.$store.dispatch("registerUser", {
+          email: this.inputEmail,
+          password: this.inputPassword,
+        });
+      }
+    },
   },
 };
 </script>

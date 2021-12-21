@@ -3,6 +3,9 @@ const store = createStore({
   state() {
     return {
       lists: [],
+      userId: null,
+      token: null,
+      tokenExpiration: null,
     };
   },
   getters: {
@@ -57,6 +60,12 @@ const store = createStore({
           list.todoes.isDone = payload.isDone;
         }
       });
+    },
+    //// REGISTER AND LOG IN MUTATIONS
+    setUser(state, payload) {
+      state.token = payload.token;
+      state.userId = payload.userId;
+      state.tokenExpiration = payload.tokenExpiration;
     },
   },
 
@@ -205,12 +214,36 @@ const store = createStore({
       context.dispatch("loadLists");
       context.commit("changeState", todo);
     },
+    //// REGISTRACIA NOVY USER
+    async registerUser(context, payload) {
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w
+  
+      `,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: payload.email,
+            password: payload.password,
+            returnSecureToken: true,
+          }),
+        }
+      );
+      const responseData = await response.json();
+      if (!response.ok) {
+        // err. handling
+        console.log(responseData);
+        const error = new Error(responseData.message || "Fail to auth!");
+        throw error;
+      }
+      console.log(responseData);
+      context.commit("setUser", {
+        token: responseData.idToken,
+        userId: responseData.localId,
+        tokenExpiration: responseData.expiresIn,
+      });
+    },
   },
 });
 
-// localStorage.setItem("aaaaa", "Štefan");
-console.log(localStorage);
-localStorage.setItem("age", "25");
-console.log(localStorage.getItem("age"));
-console.log(localStorage.key(0));
 export default store;
