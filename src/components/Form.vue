@@ -53,7 +53,7 @@ export default {
 
         this.header = "";
         this.$store.dispatch("createNewTodoList", newTodoList);
-        this.$router.push("/");
+        this.$router.push("/lists");
       } else {
         alert("problem");
       }

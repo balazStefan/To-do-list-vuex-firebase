@@ -1,10 +1,31 @@
 <template>
   <ul>
-    <router-link to="/">Edit your To do Lists</router-link>
-    <router-link to="/create">Create New Todo List</router-link>
-    <router-link to="/auth">Log in</router-link>
+    <router-link v-if="isLogedIn" to="/lists"
+      >Edit your To do Lists</router-link
+    >
+    <router-link v-if="isLogedIn" to="/create"
+      >Create New Todo List</router-link
+    >
+
+    <router-link v-if="isLogedIn" to="/auth" @click="logOutUser"
+      >Log out</router-link
+    >
   </ul>
 </template>
+<script>
+export default {
+  computed: {
+    isLogedIn() {
+      return this.$store.getters.isAuth;
+    },
+  },
+  methods: {
+    logOutUser() {
+      this.$store.dispatch("logOutUser");
+    },
+  },
+};
+</script>
 
 <style scoped>
 ul {

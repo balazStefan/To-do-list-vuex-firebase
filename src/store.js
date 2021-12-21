@@ -12,6 +12,13 @@ const store = createStore({
     lists(state) {
       return state.lists;
     },
+    getToken(state) {
+      return state.token;
+    },
+    // vráti TRUE || FALSE či som alebo niesom prihlasený
+    isAuth(state) {
+      return !!state.token;
+    },
   },
 
   mutations: {
@@ -100,11 +107,14 @@ const store = createStore({
     async addNewTask(context, payload) {
       const idList = payload.idList;
       const idTodo = payload.idTodo;
+      const token = this.$store.getters.token;
       const newTodo = {
         ...payload,
       };
+
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json`,
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?=` +
+          token,
         {
           method: "PUT",
           body: JSON.stringify(newTodo),
@@ -119,6 +129,7 @@ const store = createStore({
     async removeTodo(context, payload) {
       const idList = payload.idList;
       const idTodo = payload.idTodo;
+
       const response = await fetch(
         `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json`,
         {
@@ -142,6 +153,7 @@ const store = createStore({
         todoes: [],
         idList: payload.idList,
       };
+
       const response = await fetch(
         `https://whattodostevo-default-rtdb.firebaseio.com/lists/${id}.json`,
         {
@@ -158,8 +170,11 @@ const store = createStore({
     //// REMOVE TODOLIST FROM LISTS
     async deleteTodolistFromArr(context, payload) {
       const idList = payload;
+      const token = this.$store.getters.token;
+
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json`,
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json?=` +
+          token,
         {
           method: "DELETE",
         }
@@ -173,6 +188,7 @@ const store = createStore({
     //// CHANGE NAME OF YOUR TODOLIST
     async submitNewName(context, payload) {
       const idList = payload.idList;
+
       const newHeader = {
         idList: payload.idList,
         header: payload.header,
@@ -191,7 +207,6 @@ const store = createStore({
     },
     //// CHANGE STATE DONE || NOT DONE
     async changeState(context, payload) {
-      console.log(payload);
       const idList = payload.idList;
       const idTodo = payload.item.idTodo;
 
@@ -268,6 +283,14 @@ const store = createStore({
         token: responseData.idToken,
         userId: responseData.localId,
         tokenExpiration: responseData.expiresIn,
+      });
+    },
+    //// LOG OUT
+    logOutUser(context) {
+      context.commit("setUser", {
+        token: null,
+        userId: null,
+        tokenExpiration: null,
       });
     },
   },

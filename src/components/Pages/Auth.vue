@@ -26,6 +26,13 @@
           v-model="inputPassword"
           placeholder="Password"
         />
+        <!-- <input
+          v-if="mode === 'register'"
+          type="password"
+          id="password"
+          v-model="confirmPassword"
+          placeholder="Confirm"
+        /> -->
         <div class="btns">
           <button
             :class="{ register: mode == 'register', login: mode == 'login' }"
@@ -103,6 +110,7 @@ export default {
         this.error = err.message || "Failed to auth! Try again later...";
       }
       this.isLoading = false;
+      this.$router.replace("/create");
     },
     handleError() {
       this.error = null;
