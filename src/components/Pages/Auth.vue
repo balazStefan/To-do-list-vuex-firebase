@@ -113,13 +113,17 @@ export default {
 };
 </script>
 <style scoped>
+/* div {
+  min-width: 300px;
+  min-height: 300px;
+} */
 form {
   display: flex;
   flex-direction: column;
 }
 .control {
   margin: auto;
-  width: 500px;
+  max-width: 200px;
   margin-top: 50px;
 }
 .btns {

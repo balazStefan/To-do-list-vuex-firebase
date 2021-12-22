@@ -5,7 +5,7 @@
 </template>
 <style scoped>
 div {
-  min-width: 500px;
+  min-width: 300px;
   min-height: 300px;
   color: #555d50;
 }
