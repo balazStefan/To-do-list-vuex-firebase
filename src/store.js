@@ -15,6 +15,9 @@ const store = createStore({
     getToken(state) {
       return state.token;
     },
+    getUserId(state) {
+      return state.userId;
+    },
     // vráti TRUE || FALSE či som alebo niesom prihlasený
     isAuth(state) {
       return !!state.token;
@@ -79,12 +82,13 @@ const store = createStore({
   actions: {
     // LOAD LISTS FROM DATABASE
     async loadLists(context) {
+      const userId = context.getters.getUserId;
       const token = context.getters.getToken;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}.json?auth=` +
           token
       );
-      const responseData = (await response.json()) ?? {};
+      const responseData = (await response.json()) || {}; // ??np
       if (!response.ok) {
         // err handling
         const error = new Error(responseData.message || "FAIL TO FETCH ");
@@ -113,9 +117,9 @@ const store = createStore({
       const newTodo = {
         ...payload,
       };
-
+      const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "PUT",
@@ -132,9 +136,10 @@ const store = createStore({
       const idList = payload.idList;
       const idTodo = payload.idTodo;
       const token = context.getters.getToken;
+      const userId = context.getters.getUserId;
 
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "DELETE",
@@ -158,8 +163,9 @@ const store = createStore({
         idList: payload.idList,
       };
       const token = context.getters.getToken;
+      const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${id}.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${id}.json?auth=` +
           token,
         {
           method: "PUT",
@@ -176,9 +182,9 @@ const store = createStore({
     async deleteTodolistFromArr(context, payload) {
       const idList = payload;
       const token = context.getters.getToken;
-
+      const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}.json?auth=` +
           token,
         {
           method: "DELETE",
@@ -198,8 +204,9 @@ const store = createStore({
         idList: payload.idList,
         header: payload.header,
       };
+      const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}.json?auth=` +
           token,
         {
           method: "PATCH",
@@ -216,15 +223,15 @@ const store = createStore({
       const idList = payload.idList;
       const idTodo = payload.item.idTodo;
       const token = context.getters.getToken;
-      // const isDone = payload.item.isDone;
 
       const todo = {
         isDone: payload.item.isDone,
         idTodo: payload.item.idTodo,
         idList: payload.idList,
       };
+      const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?auth=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "PATCH",
