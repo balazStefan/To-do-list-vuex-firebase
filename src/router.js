@@ -10,16 +10,10 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      component: Auth, // TodoLists
-      props: true,
+      component: Auth,
       redirect: "/auth",
-      meta: { requiresUnAuth: true },
     },
 
-    {
-      path: "/admin",
-      redirect: "/",
-    },
     { path: "/lists", component: TodoLists, meta: { requiresAuth: true } },
     {
       path: "/create",

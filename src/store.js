@@ -79,8 +79,10 @@ const store = createStore({
   actions: {
     // LOAD LISTS FROM DATABASE
     async loadLists(context) {
+      const token = context.getters.getToken;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists.json`
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists.json?auth=` +
+          token
       );
       const responseData = (await response.json()) ?? {};
       if (!response.ok) {
@@ -107,13 +109,13 @@ const store = createStore({
     async addNewTask(context, payload) {
       const idList = payload.idList;
       const idTodo = payload.idTodo;
-      const token = this.$store.getters.token;
+      const token = context.getters.getToken;
       const newTodo = {
         ...payload,
       };
 
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "PUT",
@@ -129,9 +131,11 @@ const store = createStore({
     async removeTodo(context, payload) {
       const idList = payload.idList;
       const idTodo = payload.idTodo;
+      const token = context.getters.getToken;
 
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json`,
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?auth=` +
+          token,
         {
           method: "DELETE",
           body: JSON.stringify(idTodo),
@@ -153,9 +157,10 @@ const store = createStore({
         todoes: [],
         idList: payload.idList,
       };
-
+      const token = context.getters.getToken;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${id}.json`,
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${id}.json?auth=` +
+          token,
         {
           method: "PUT",
           body: JSON.stringify(list),
@@ -170,10 +175,10 @@ const store = createStore({
     //// REMOVE TODOLIST FROM LISTS
     async deleteTodolistFromArr(context, payload) {
       const idList = payload;
-      const token = this.$store.getters.token;
+      const token = context.getters.getToken;
 
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json?=` +
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json?auth=` +
           token,
         {
           method: "DELETE",
@@ -188,13 +193,14 @@ const store = createStore({
     //// CHANGE NAME OF YOUR TODOLIST
     async submitNewName(context, payload) {
       const idList = payload.idList;
-
+      const token = context.getters.getToken;
       const newHeader = {
         idList: payload.idList,
         header: payload.header,
       };
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json`,
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}.json?auth=` +
+          token,
         {
           method: "PATCH",
           body: JSON.stringify(newHeader),
@@ -209,6 +215,8 @@ const store = createStore({
     async changeState(context, payload) {
       const idList = payload.idList;
       const idTodo = payload.item.idTodo;
+      const token = context.getters.getToken;
+      // const isDone = payload.item.isDone;
 
       const todo = {
         isDone: payload.item.isDone,
@@ -216,7 +224,8 @@ const store = createStore({
         idList: payload.idList,
       };
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json`,
+        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${idList}/todoes/${idTodo}.json?auth=` +
+          token,
         {
           method: "PATCH",
           body: JSON.stringify(todo),
@@ -226,7 +235,9 @@ const store = createStore({
       if (!response.ok) {
         //...err handling
       }
+
       context.dispatch("loadLists");
+
       context.commit("changeState", todo);
     },
     //// REGISTRATION NEW USER
@@ -247,11 +258,11 @@ const store = createStore({
       const responseData = await response.json();
       if (!response.ok) {
         // err. handling
-        console.log(responseData);
+
         const error = new Error(responseData.message || "Fail to auth!");
         throw error;
       }
-      console.log(responseData);
+
       context.commit("setUser", {
         token: responseData.idToken,
         userId: responseData.localId,
@@ -274,11 +285,15 @@ const store = createStore({
       const responseData = await response.json();
       if (!response.ok) {
         // err. handling
-        console.log(responseData);
+
         const error = new Error(responseData.message || "Fail to auth!");
         throw error;
       }
-      console.log(responseData);
+      /// ADD TO LOCAL STORAGE DATA
+
+      localStorage.setItem("token", responseData.idToken);
+      localStorage.setItem("userId", responseData.localId);
+
       context.commit("setUser", {
         token: responseData.idToken,
         userId: responseData.localId,
@@ -292,6 +307,17 @@ const store = createStore({
         userId: null,
         tokenExpiration: null,
       });
+    },
+    tryLogin(context) {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      if (token && userId) {
+        context.commit("setUser", {
+          token: token,
+          userId: userId,
+          tokenExpiration: null,
+        });
+      }
     },
   },
 });

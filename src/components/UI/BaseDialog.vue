@@ -12,7 +12,7 @@
       </section>
       <menu v-if="!fixed">
         <slot name="actions">
-          <base-button @click="tryClose">Close</base-button>
+          <button @click="tryClose">Close</button>
         </slot>
       </menu>
     </dialog>
@@ -36,13 +36,13 @@ export default {
       default: false,
     },
   },
-  emits: ['close'],
+  emits: ["close"],
   methods: {
     tryClose() {
       if (this.fixed) {
         return;
       }
-      this.$emit('close');
+      this.$emit("close");
     },
   },
 };
