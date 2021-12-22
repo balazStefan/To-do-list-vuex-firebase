@@ -18,6 +18,18 @@ export default {
   created() {
     this.$store.dispatch("tryLogin");
   },
+  computed: {
+    didAutoLogOut() {
+      return this.$store.getters.didAutoLogOut;
+    },
+  },
+  watch: {
+    didAutoLogOut(current, old) {
+      if (current && current !== old) {
+        this.$router.replace("/auth");
+      }
+    },
+  },
 };
 </script>
 <style>

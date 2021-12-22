@@ -1,3 +1,5 @@
+let timer; // určené na autologout
+
 import { createStore } from "vuex";
 const store = createStore({
   state() {
@@ -6,6 +8,7 @@ const store = createStore({
       userId: null,
       token: null,
       tokenExpiration: null,
+      didAutoLogOut: false,
     };
   },
   getters: {
@@ -21,6 +24,9 @@ const store = createStore({
     // vráti TRUE || FALSE či som alebo niesom prihlasený
     isAuth(state) {
       return !!state.token;
+    },
+    didAutoLogOut(state) {
+      return state.didAutoLogOut;
     },
   },
 
@@ -75,7 +81,10 @@ const store = createStore({
     setUser(state, payload) {
       state.token = payload.token;
       state.userId = payload.userId;
-      state.tokenExpiration = payload.tokenExpiration;
+      state.didLogOut = false;
+    },
+    setAutoLogOut(state) {
+      state.didAutoLogOut = true;
     },
   },
 
@@ -88,7 +97,7 @@ const store = createStore({
         `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}.json?auth=` +
           token
       );
-      const responseData = (await response.json()) || {}; // ??np
+      const responseData = (await response.json()) ?? {}; // ||
       if (!response.ok) {
         // err handling
         const error = new Error(responseData.message || "FAIL TO FETCH ");
@@ -100,7 +109,7 @@ const store = createStore({
         const list = {
           idList: key,
           header: responseData[key]?.header,
-          todoes: Object.values(responseData[key]?.todoes), // Object.values(responseData[key]?.todoes)
+          todoes: Object.values(responseData[key]?.todoes ?? []),
         };
 
         lists.push(list);
@@ -297,34 +306,54 @@ const store = createStore({
         throw error;
       }
       /// ADD TO LOCAL STORAGE DATA
+      const expiresIn = +responseData.expiresIn * 1000; // automaticky odhlási po 1h
+      const expirationDate = new Date().getTime() + expiresIn;
 
       localStorage.setItem("token", responseData.idToken);
       localStorage.setItem("userId", responseData.localId);
+      localStorage.setItem("tokenExpiration", expirationDate);
+      timer = setTimeout(function () {
+        context.dispatch("didAutoLogOut");
+      }, expiresIn);
 
       context.commit("setUser", {
         token: responseData.idToken,
         userId: responseData.localId,
-        tokenExpiration: responseData.expiresIn,
       });
     },
     //// LOG OUT
     logOutUser(context) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("tokenExpiration");
+      clearTimeout(timer);
       context.commit("setUser", {
         token: null,
         userId: null,
-        tokenExpiration: null,
       });
     },
     tryLogin(context) {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+      const expiresIn = +tokenExpiration - new Date().getTime();
+      if (expiresIn < 0) {
+        return;
+      }
+      timer = setTimeout(function () {
+        context.dispatch("didAutoLogOut");
+      }, expiresIn);
       if (token && userId) {
         context.commit("setUser", {
           token: token,
           userId: userId,
-          tokenExpiration: null,
         });
       }
+    },
+    didAutoLogOut(context) {
+      context.dispatch("logOutUser");
+      context.commit("setAutoLogOut");
     },
   },
 });
