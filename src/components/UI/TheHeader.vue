@@ -1,5 +1,6 @@
 <template>
   <ul>
+    <h2 class="white">Create To Do List</h2>
     <router-link v-if="isLogedIn" to="/lists"
       >Edit your To do Lists</router-link
     >
@@ -41,6 +42,9 @@ a {
   color: white;
 }
 a.router-link-active {
-  color: rgba(92, 255, 157, 0.87);
+  font-weight: 900;
+  font-size: 1.2rem;
+}
+h2 {
 }
 </style>

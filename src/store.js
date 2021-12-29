@@ -138,6 +138,8 @@ const store = createStore({
       if (!response.ok) {
         //err handling
       }
+      //// add to Local Storage in future PWA
+      localStorage.setItem("newTodo", JSON.stringify(newTodo));
       context.commit("addNewTask", newTodo);
     },
     //// REMOVE TODO FROM TODOES --------------
@@ -184,7 +186,8 @@ const store = createStore({
       if (!response.ok) {
         //...err handling
       }
-
+      //// add to Local Storage in future PWA
+      localStorage.setItem("newTodoList", JSON.stringify(list));
       context.commit("addNewTodolist", list);
     },
     //// REMOVE TODOLIST FROM LISTS

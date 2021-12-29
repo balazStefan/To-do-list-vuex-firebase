@@ -5,8 +5,8 @@
 </template>
 <style scoped>
 div {
-  min-width: 300px;
-  min-height: 300px;
+  min-width: 360px;
+  min-height: auto;
   color: #555d50;
 }
 </style>

@@ -194,25 +194,40 @@ export default {
     },
 
     filteredTodoes() {
+      let normalizedQuery = this.search
+        .toLowerCase() // vráti šetko malým
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, ""); // vráti bez diakritiky
+
       const allTodoes = this.todoes;
       const filteredItemBySearch = this.filteredBySearch(
         allTodoes,
-        this.search
+        normalizedQuery
       );
       const filteredByDropdow = this.filterByDropdown(
         filteredItemBySearch,
         this.option
       );
-
       return filteredByDropdow;
     },
 
-    filteredBySearch(allTodoes, searchQuery) {
-      if (!searchQuery) return allTodoes;
+    filteredBySearch(allTodoes, normalizedQuery) {
+      if (!normalizedQuery) return allTodoes;
 
-      const filteredResults = allTodoes.filter((todo) =>
-        todo.title.includes(searchQuery)
+      const filteredResults = allTodoes.filter(
+        (todo) =>
+          todo.msg
+            .toLowerCase() // vráti šetko malým
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")
+            .includes(normalizedQuery) ||
+          todo.title
+            .toLowerCase() // vráti šetko malým
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")
+            .includes(normalizedQuery)
       );
+      console.log(normalizedQuery);
       return filteredResults;
     },
     filterByDropdown(allTodoes, option) {
