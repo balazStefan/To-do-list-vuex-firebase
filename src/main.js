@@ -7,7 +7,6 @@ import "wave-ui/dist/wave-ui.css";
 import BaseCard from "./components/UI/BaseCard.vue";
 import BaseDialog from "./components/UI/BaseDialog.vue";
 import BaseSpinner from "./components/UI/BaseSpinner.vue";
-import "./assets/tailwind.css";
 import "@mdi/font/css/materialdesignicons.min.css";
 
 const app = createApp(App);

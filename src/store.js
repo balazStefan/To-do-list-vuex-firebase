@@ -5,6 +5,7 @@ const store = createStore({
   state() {
     return {
       lists: [],
+
       userId: null,
       token: null,
       tokenExpiration: null,
@@ -38,7 +39,7 @@ const store = createStore({
 
     //// Prida todo
     addNewTask(state, payload) {
-      state.lists.map((list) => {
+      state.lists.find((list) => {
         if (list.idList === payload.idList) {
           list.todoes.push(payload);
         }
@@ -46,7 +47,7 @@ const store = createStore({
     },
     // odoberie TODO z ARR TODOES
     removeTodo(state, payload) {
-      state.lists.map((list) => {
+      state.lists.find((list) => {
         list.todoes = list.todoes.filter(
           (todo) => todo.idTodo !== payload.idTodo
         );
@@ -62,7 +63,7 @@ const store = createStore({
     },
     // po zvolení listu vieme prepisať
     submitNewName(state, payload) {
-      state.lists.map((list) => {
+      state.lists.find((list) => {
         if (list.idList === payload.idList) {
           list.header = payload.header;
         }
@@ -70,8 +71,8 @@ const store = createStore({
     },
     // done --> not done --> done
     changeState(state, payload) {
-      console.log(payload);
-      state.lists.map((list) => {
+      // console.log(payload);
+      state.lists.find((list) => {
         if (list.idList === payload.idList) {
           list.todoes.isDone = payload.isDone;
         }
@@ -261,8 +262,9 @@ const store = createStore({
     },
     //// REGISTRATION NEW USER
     async registerUser(context, payload) {
+      const regKey = process.env.VUE_APP_REGISTER_KEY;
       const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${regKey}
   
       `,
         {
@@ -273,7 +275,7 @@ const store = createStore({
             returnSecureToken: true,
           }),
         }
-      );
+      ); ////AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w
       const responseData = await response.json();
       if (!response.ok) {
         // err. handling
@@ -290,8 +292,9 @@ const store = createStore({
     },
     //// LOGIN USER
     async loginUser(context, payload) {
+      const logKey = process.env.VUE_APP_REGISTER_KEY;
       const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w`,
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${logKey}`,
         {
           method: "POST",
           body: JSON.stringify({

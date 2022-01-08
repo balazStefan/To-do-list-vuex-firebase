@@ -42,7 +42,7 @@
         <div class="error" v-if="v$.inputPassword.$error">
           {{ v$.inputPassword.$errors[0].$message }}
         </div>
-        <w-input
+        <!-- <w-input
           v-if="mode == 'register'"
           class="pt5"
           placeholder="Confirm password"
@@ -60,10 +60,11 @@
         </w-input>
         <div class="error" v-if="v$.inputConfirmPassword.$error">
           Password is not same !
-        </div>
+        </div> -->
 
         <w-flex class="my5" justify-space-around>
           <button
+            class="box sh-6"
             :class="{ register: mode == 'register', login: mode == 'login' }"
           >
             {{ actionMode }}
@@ -87,7 +88,7 @@ import {
   minLength,
   maxLength,
   email,
-  sameAs,
+  // sameAs,
 } from "@vuelidate/validators";
 export default {
   data() {
@@ -95,16 +96,16 @@ export default {
       v$: useValidate(),
       inputEmail: "",
       inputPassword: "",
-      inputConfirmPassword: "",
       mode: "login",
       isLoading: false,
       error: null,
       isPassword: true,
-      isConfirmPassWord: true,
       minLength: 6,
       maxLength: 50,
-      email,
-      sameAs,
+      // email, ??
+      // inputConfirmPassword: "",
+      // isConfirmPassWord: true,
+      // sameAs,
     };
   },
   validations() {
@@ -118,9 +119,9 @@ export default {
         minLength: minLength(this.minLength),
         maxLength: maxLength(this.maxLength),
       },
-      inputConfirmPassword: {
-        sameAsPassword: sameAs(this.inputPassword),
-      },
+      // inputConfirmPassword: {
+      //   inputConfirmPassword: sameAs(this.inputPassword),
+      // },
     };
   },
   computed: {
@@ -172,7 +173,7 @@ export default {
           this.error = err.message || "Failed to auth! Try again later...";
         }
         this.isLoading = false;
-        this.$router.replace("/create");
+        this.$router.replace("/lists");
       }
     },
     handleError() {
@@ -183,7 +184,9 @@ export default {
 </script>
 <style scoped>
 button {
-  padding: 5px;
+  padding: 10px;
+  border: 1px solid rgb(196, 155, 155);
+  border-radius: 6px;
 }
 button:hover {
   cursor: pointer;

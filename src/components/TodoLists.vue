@@ -27,9 +27,20 @@ export default {
       return this.$store.getters.lists;
     },
   },
+  watch: {
+    lists() {
+      if (this.lists <= 0) {
+        this.redirectedToCreate();
+      }
+    },
+  },
   methods: {
     load() {
       this.$store.dispatch("loadLists");
+    },
+    redirectedToCreate() {
+      // ak mam 0 listov pošle ma na /create na vytvorenie nového
+      this.$router.replace("/create");
     },
   },
 };

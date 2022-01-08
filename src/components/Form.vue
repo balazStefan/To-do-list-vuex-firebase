@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <h2>Need more then One Todolist?</h2>
+      <h2>Create new Todolist?</h2>
       <p>Type below new name of your To do List</p>
     </header>
     <form>
@@ -23,10 +23,12 @@
 <script>
 import useValidate from "@vuelidate/core";
 import { required, minLength, maxLength } from "@vuelidate/validators";
+import { uuid } from "vue-uuid";
 export default {
   data() {
     return {
       v$: useValidate(),
+      uuid: uuid.v1(),
       todolists: [],
       header: "",
       minLength: 2,
@@ -48,7 +50,7 @@ export default {
       if (!this.v$.$error) {
         const newTodoList = {
           header: this.header,
-          idList: (Math.random() * 1000).toFixed(0).toString(),
+          idList: this.uuid,
         };
 
         this.header = "";

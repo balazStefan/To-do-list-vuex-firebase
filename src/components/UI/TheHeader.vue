@@ -1,7 +1,7 @@
 <template>
   <ul>
-    <h2 class="white">Create To Do List</h2>
-    <router-link v-if="isLogedIn" to="/lists"
+    <!-- <h2 class="logo">Logo</h2> -->
+    <router-link v-if="isLogedIn && lists.length >= 1" to="/lists"
       >Edit your To do Lists</router-link
     >
     <router-link v-if="isLogedIn" to="/create"
@@ -18,6 +18,9 @@ export default {
   computed: {
     isLogedIn() {
       return this.$store.getters.isAuth;
+    },
+    lists() {
+      return this.$store.getters.lists;
     },
   },
   methods: {
@@ -45,6 +48,12 @@ a.router-link-active {
   font-weight: 900;
   font-size: 1.2rem;
 }
-h2 {
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgb(9, 102, 175);
 }
 </style>
