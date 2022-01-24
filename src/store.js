@@ -95,10 +95,9 @@ const store = createStore({
       const userId = context.getters.getUserId;
       const token = context.getters.getToken;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}.json?auth=` +
-          token
+        `${process.env.VUE_APP_URL}${userId}.json?auth=` + token 
       );
-      const responseData = (await response.json()) ?? {}; // ||
+      const responseData = (await response.json()) ?? {};
       if (!response.ok) {
         // err handling
         const error = new Error(responseData.message || "FAIL TO FETCH ");
@@ -129,37 +128,45 @@ const store = createStore({
       };
       const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}/todoes/${idTodo}.json?auth=` +
+        `${process.env.VUE_APP_URL}${userId}/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "PUT",
           body: JSON.stringify(newTodo),
         }
       );
+      const responseData = await response.json();
       if (!response.ok) {
-        //err handling
+        const error = new Error(
+          responseData.message ||
+            "Nepodarilo sa vytvoriť novú položku zoznamu... skúste neskôr"
+        );
+        throw error;
       }
-      //// add to Local Storage in future PWA
+
       localStorage.setItem("newTodo", JSON.stringify(newTodo));
       context.commit("addNewTask", newTodo);
     },
     //// REMOVE TODO FROM TODOES --------------
-    async removeTodo(context, payload) {
-      const idList = payload.idList;
-      const idTodo = payload.idTodo;
+    async removeTodo(context, { idList, idTodo }) {
       const token = context.getters.getToken;
       const userId = context.getters.getUserId;
 
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}/todoes/${idTodo}.json?auth=` +
+        `${process.env.VUE_APP_URL}${userId}/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "DELETE",
           body: JSON.stringify(idTodo),
         }
       );
+      const responseData = await response.json();
       if (!response.ok) {
-        //.. err handling
+        const error = new Error(
+          responseData.message ||
+            "Nepodarilo sa vymazať položku zoznamu ... skúste neskôr"
+        );
+        throw error;
       }
       context.commit("removeTodo", {
         idList: idList,
@@ -167,123 +174,128 @@ const store = createStore({
       });
     },
     //// ADD NEW TODOLIST IN LISTS
-    async createNewTodoList(context, payload) {
-      const id = payload.idList;
+    async createNewTodoList(context, { header, idList }) {
       const list = {
-        header: payload.header,
+        header: header,
         todoes: [],
-        idList: payload.idList,
+        idList: idList,
       };
       const token = context.getters.getToken;
       const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${id}.json?auth=` +
-          token,
+        `${process.env.VUE_APP_URL}${userId}/${idList}.json?auth=` + token,
         {
           method: "PUT",
           body: JSON.stringify(list),
         }
       );
+      const responseData = await response.json();
       if (!response.ok) {
-        //...err handling
+        const error = new Error(
+          responseData.message ||
+            "Nepodarilo sa vytvoriť nový list... skúste neskôr"
+        );
+        throw error;
       }
-      //// add to Local Storage in future PWA
       localStorage.setItem("newTodoList", JSON.stringify(list));
       context.commit("addNewTodolist", list);
     },
     //// REMOVE TODOLIST FROM LISTS
-    async deleteTodolistFromArr(context, payload) {
-      const idList = payload;
+    async deleteTodolistFromArr(context, idList) {
       const token = context.getters.getToken;
       const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}.json?auth=` +
-          token,
+        `${process.env.VUE_APP_URL}${userId}/${idList}.json?auth=` + token,
         {
           method: "DELETE",
         }
       );
+      const responseData = await response.json();
       if (!response.ok) {
-        // err.handling
+        const error = new Error(
+          responseData.message || "Nepodarilo sa vymazať... skúste neskôr"
+        );
+        throw error;
       }
 
-      context.commit("deleteTodolistFromArr", payload);
+      context.commit("deleteTodolistFromArr", idList);
     },
     //// CHANGE NAME OF YOUR TODOLIST
-    async submitNewName(context, payload) {
-      const idList = payload.idList;
+    async submitNewName(context, { header, idList }) {
       const token = context.getters.getToken;
       const newHeader = {
-        idList: payload.idList,
-        header: payload.header,
+        idList: idList,
+        header: header,
       };
       const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}.json?auth=` +
-          token,
+        `${process.env.VUE_APP_URL}${userId}/${idList}.json?auth=` + token,
         {
           method: "PATCH",
           body: JSON.stringify(newHeader),
         }
       );
+      const responseData = await response.json();
       if (!response.ok) {
-        //...err handling
+        const error = new Error(
+          responseData.message || "Nepodarilo sa upraviť... skúste neskôr"
+        );
+        throw error;
       }
       context.commit("submitNewName", newHeader);
     },
     //// CHANGE STATE DONE || NOT DONE
-    async changeState(context, payload) {
-      const idList = payload.idList;
-      const idTodo = payload.item.idTodo;
+    async changeState(context, { item, idList }) {
+      const idTodo = item.idTodo;
       const token = context.getters.getToken;
 
       const todo = {
-        isDone: payload.item.isDone,
-        idTodo: payload.item.idTodo,
-        idList: payload.idList,
+        isDone: item.isDone,
+        idTodo: item.idTodo,
+        idList: idList,
       };
       const userId = context.getters.getUserId;
       const response = await fetch(
-        `https://whattodostevo-default-rtdb.firebaseio.com/lists/${userId}/${idList}/todoes/${idTodo}.json?auth=` +
+        `${process.env.VUE_APP_URL}${userId}/${idList}/todoes/${idTodo}.json?auth=` +
           token,
         {
           method: "PATCH",
           body: JSON.stringify(todo),
         }
       );
-
+      const responseData = await response.json();
       if (!response.ok) {
         //...err handling
+        const error = new Error(
+          responseData.message || "Nepodarilo sa upraviť... skúste neskôr"
+        );
+        throw error;
       }
 
       context.dispatch("loadLists");
-
       context.commit("changeState", todo);
     },
     //// REGISTRATION NEW USER
-    async registerUser(context, payload) {
-      const regKey = process.env.VUE_APP_REGISTER_KEY;
+    async registerUser(context, { email, password }) {
       const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${regKey}
+        `${process.env.VUE_APP_URL_REG_LOG}signUp?key=${process.env.VUE_APP_KEY}
   
       `,
         {
           method: "POST",
           body: JSON.stringify({
-            email: payload.email,
-            password: payload.password,
+            email: email,
+            password: password,
             returnSecureToken: true,
           }),
         }
-      ); ////AIzaSyC_PbFGQ112UmmNuGC7L2TFtboEZ-d8Q1w
+      );
       const responseData = await response.json();
       if (!response.ok) {
         // err. handling
-
         const error = new Error(responseData.message || "Fail to auth!");
         throw error;
       }
-
       context.commit("setUser", {
         token: responseData.idToken,
         userId: responseData.localId,
@@ -291,15 +303,14 @@ const store = createStore({
       });
     },
     //// LOGIN USER
-    async loginUser(context, payload) {
-      const logKey = process.env.VUE_APP_REGISTER_KEY;
+    async loginUser(context, { email, password }) {
       const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${logKey}`,
+        `${process.env.VUE_APP_URL_REG_LOG}signInWithPassword?key=${process.env.VUE_APP_KEY}`,
         {
           method: "POST",
           body: JSON.stringify({
-            email: payload.email,
-            password: payload.password,
+            email: email,
+            password: password,
             returnSecureToken: true,
           }),
         }
