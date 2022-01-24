@@ -243,11 +243,14 @@ export default {
       this.isActive = true;
     },
     submitNewName() {
-      this.isActive = false;
-      this.$store.dispatch("submitNewName", {
-        header: this.nameofTodoList,
-        idList: this.idList,
-      });
+      if (this.nameofTodoList.length >= 2) {
+        this.isActive = false;
+        this.$store.dispatch("submitNewName", {
+          header: this.nameofTodoList,
+          idList: this.idList,
+        });
+      }
+      return;
     },
     showForm() {
       this.v$.$reset(); // ak sa rozhodnem že nechcem a zavriem
